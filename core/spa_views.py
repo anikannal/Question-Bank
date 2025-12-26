@@ -18,9 +18,8 @@ class SPAView(View):
             try:
                 file_path = safe_join(static_dir, path)
                 if os.path.isfile(file_path):
-                    # Use FileResponse to serve with correct MIME type
                     return FileResponse(open(file_path, 'rb'))
-            except (ValueError, UnicodeDecodeError):
+            except (ValueError, UnicodeDecodeError, FileNotFoundError):
                 continue
                 
         # If not found, fall back to index.html (for Angular routing)
