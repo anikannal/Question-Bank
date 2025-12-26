@@ -39,9 +39,9 @@ def test_task_1_priority_field(api_client):
         },
         format='json'
     )
-    # Checks roughly if priority field is accepted
-    if "priority" in response.json():
-         pass
+    assert response.status_code == 201
+    data = response.json()
+    assert data.get("priority") == "High"
 
 @pytest.mark.django_db
 def test_task_2_completion_bug(api_client):
@@ -55,13 +55,17 @@ def test_task_2_completion_bug(api_client):
     )
     task_id = create_res.json()["id"]
 
+    # Initial state
+    assert create_res.json()["is_completed"] is False
+
     # Set to True
-    client = api_client
-    update_res = client.put(f"/tasks/{task_id}/", {"title": "Bug Task", "is_completed": True}, format='json')
+    update_res = api_client.put(f"/tasks/{task_id}/", {"title": "Bug Task", "is_completed": True}, format='json')
+    assert update_res.status_code == 200
     assert update_res.json()["is_completed"] is True
 
     # Set back to False
-    update_res_2 = client.put(f"/tasks/{task_id}/", {"title": "Bug Task", "is_completed": False}, format='json')
+    update_res_2 = api_client.put(f"/tasks/{task_id}/", {"title": "Bug Task", "is_completed": False}, format='json')
+    assert update_res_2.status_code == 200
     assert update_res_2.json()["is_completed"] is False
 
 @pytest.mark.django_db
@@ -74,5 +78,7 @@ def test_task_3_filter_by_assignee(api_client):
     api_client.post("/tasks/", {"title": "U2 Task 1", "owner_id": u2['id']}, format='json')
 
     res_u1 = api_client.get(f"/tasks/?owner_id={u1['id']}")
-    # Assertions on length left for candidate context
-    # assert len(res_u1.json()) == 2
+    assert res_u1.status_code == 200
+    assert len(res_u1.json()) == 2
+    for task in res_u1.json():
+        assert task['owner_id'] == u1['id']
