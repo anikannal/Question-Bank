@@ -22,8 +22,7 @@ echo "🔍 Validating Setup..."
 
 # 1. Check Python Dependencies
 echo "Step 1: Checking Python dependencies..."
-$PYTHON_CMD -c "import django; import rest_framework; import pymongo; import pytest" 2>/dev/null
-if [ $? -eq 0 ]; then
+if $PYTHON_CMD -c "import django; import rest_framework; import pymongo; import pytest" 2>/dev/null; then
     echo "✅ Python dependencies are installed."
 else
     echo "❌ ERROR: Missing Python dependencies. Run ./install.sh"
@@ -41,8 +40,7 @@ fi
 
 # 3. Check MongoDB Connectivity
 echo "Step 3: Checking MongoDB connectivity..."
-$PYTHON_CMD -c "from core.utils import client; client.server_info()" 2>/dev/null
-if [ $? -eq 0 ]; then
+if $PYTHON_CMD -c "from pymongo import MongoClient; client = MongoClient('mongodb://localhost:27017/', serverSelectionTimeoutMS=2000); client.server_info()" 2>/dev/null; then
     echo "✅ MongoDB is reachable."
 else
     echo "⚠️  WARNING: MongoDB is not reachable. Ensure it is running on localhost:27017."
@@ -51,8 +49,7 @@ fi
 
 # 4. Check Django Migrations
 echo "Step 4: Checking Django project health..."
-$PYTHON_CMD manage.py check > /dev/null 2>&1
-if [ $? -eq 0 ]; then
+if $PYTHON_CMD manage.py check > /dev/null 2>&1; then
     echo "✅ Django project is healthy."
 else
     echo "❌ ERROR: Django project configuration error."
