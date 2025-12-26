@@ -1,14 +1,32 @@
 #!/bin/bash
 set -e
 
-echo "Installing Backend Dependencies..."
-pip install -r requirements.txt
+# Add local Mac Homebrew paths if they exist
+[ -d "/opt/homebrew/bin" ] && export PATH="/opt/homebrew/bin:$PATH"
+[ -d "/usr/local/bin" ] && export PATH="/usr/local/bin:$PATH"
+
+# Function to find pip
+get_pip() {
+    if command -v pip3 &> /dev/null; then
+        echo "pip3"
+    elif command -v pip &> /dev/null; then
+        echo "pip"
+    else
+        echo "Error: pip not found" >&2
+        exit 1
+    fi
+}
+
+PIP_CMD=$(get_pip)
+
+echo "Installing Backend Dependencies using $PIP_CMD..."
+$PIP_CMD install -r requirements.txt
 
 echo "Installing Frontend Dependencies..."
 cd frontend
 npm install
 
 echo "Building Frontend..."
-npm run build
+NG_CLI_ANALYTICS=false npm run build
 
-echo "Detailed setup complete."
+echo "Setup complete."

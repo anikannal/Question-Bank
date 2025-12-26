@@ -2,17 +2,14 @@
 __pycache__/
 *.py[cod]
 *$py.class
-venv/
-.env
-.pytest_cache/
+db.sqlite3
+.venv/
+env/
 
-# SQLite
-*.db
-*.sqlite3
-
-# Node.js
+# Node
 node_modules/
 dist/
+.angular/
+
+# System
 .DS_Store
-coverage/
-.vscode/
