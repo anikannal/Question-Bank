@@ -1,0 +1,19 @@
+<div class="component-box">
+    <h2>Users</h2>
+
+    <div class="form-group">
+        <h3>Add User</h3>
+        <input type="email" [(ngModel)]="newUser.email" placeholder="Email" style="margin-right: 10px;">
+        <button (click)="createUser()">Create</button>
+    </div>
+
+    <ul class="list">
+        <li *ngFor="let user of users" class="item">
+            <strong>{{ user.id }}</strong> - {{ user.email }}
+            <span [style.color]="user.is_active ? 'green' : 'red'">
+                ({{ user.is_active ? 'Active' : 'Inactive' }})
+            </span>
+            <span>Tasks: {{ user.tasks?.length || 0 }}</span>
+        </li>
+    </ul>
+</div>

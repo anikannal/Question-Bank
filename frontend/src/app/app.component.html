@@ -1,0 +1,16 @@
+<div class="container">
+    <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1>Question Bank</h1>
+        <nav>
+            <button (click)="setView('users')"
+                [style.background-color]="currentView === 'users' ? '#0056b3' : ''">Users</button>
+            <button (click)="setView('tasks')" [style.background-color]="currentView === 'tasks' ? '#0056b3' : ''"
+                style="margin-left: 10px;">Tasks</button>
+        </nav>
+    </header>
+
+    <main>
+        <app-user-list *ngIf="currentView === 'users'"></app-user-list>
+        <app-task-list *ngIf="currentView === 'tasks'"></app-task-list>
+    </main>
+</div>

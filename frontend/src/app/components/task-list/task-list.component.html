@@ -1,0 +1,26 @@
+<div class="component-box">
+    <h2>Tasks</h2>
+
+    <div class="form-group">
+        <h3>Add Task</h3>
+        <input type="text" [(ngModel)]="newTask.title" placeholder="Task Title">
+        <select [(ngModel)]="newTask.owner_id" style="margin: 10px 0; padding: 5px; width: 100%;">
+            <option *ngFor="let user of users" [value]="user.id">
+                {{ user.email }} (ID: {{ user.id }})
+            </option>
+        </select>
+        <button (click)="createTask()">Create Task</button>
+    </div>
+
+    <ul class="list">
+        <li *ngFor="let task of tasks" class="item">
+            <div>
+                <input type="checkbox" [checked]="task.is_completed" (change)="toggleTask(task)">
+                <span [style.text-decoration]="task.is_completed ? 'line-through' : 'none'" style="margin-left: 10px;">
+                    {{ task.title }}
+                </span>
+            </div>
+            <small>Owner ID: {{ task.owner }}</small>
+        </li>
+    </ul>
+</div>
