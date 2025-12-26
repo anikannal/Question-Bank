@@ -2,7 +2,12 @@ from pymongo import MongoClient
 from django.conf import settings
 
 # Global client
-client = MongoClient('mongodb://localhost:27017/', serverSelectionTimeoutMS=2000)
-db = client['question_bank_db']
+config = settings.MONGODB_CONFIG
+client = MongoClient(
+    host=config['host'],
+    port=config['port'],
+    serverSelectionTimeoutMS=config['timeout']
+)
+db = client[config['db_name']]
 users_collection = db['users']
 tasks_collection = db['tasks']

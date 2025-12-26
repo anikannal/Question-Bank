@@ -1,4 +1,7 @@
 from pathlib import Path
+import os
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -124,3 +127,10 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+MONGODB_CONFIG = {
+    'host': os.getenv('MONGODB_HOST', 'localhost'),
+    'port': int(os.getenv('MONGODB_PORT', 27017)),
+    'db_name': os.getenv('MONGODB_DB', 'question_bank_db'),
+    'timeout': 2000,
+}

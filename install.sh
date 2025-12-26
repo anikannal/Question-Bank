@@ -4,6 +4,7 @@ set -e
 # Add local Mac Homebrew paths if they exist
 [ -d "/opt/homebrew/bin" ] && export PATH="/opt/homebrew/bin:$PATH"
 [ -d "/usr/local/bin" ] && export PATH="/usr/local/bin:$PATH"
+mkdir -p data/db
 
 # Function to find pip
 get_pip() {

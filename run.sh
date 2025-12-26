@@ -18,6 +18,28 @@ get_python() {
 }
 
 PYTHON_CMD=$(get_python)
+mkdir -p data/db
+
+# Check if MongoDB is running
+if ! pgrep -x "mongod" > /dev/null; then
+    if command -v mongod &> /dev/null; then
+        echo "Starting MongoDB..."
+        mongod --dbpath ./data/db --logpath ./data/mongodb.log --fork
+        # Wait for MongoDB to start
+        for i in {1..10}; do
+            if mongod --eval "db.runCommand({ ping: 1 })" --quiet > /dev/null 2>&1; then
+                echo "MongoDB started successfully."
+                break
+            fi
+            echo "Waiting for MongoDB... ($i)"
+            sleep 1
+        done
+    else
+        echo "⚠️  WARNING: mongod command not found. Skipping auto-start."
+    fi
+else
+    echo "MongoDB is already running."
+fi
 
 echo "Running Migrations..."
 $PYTHON_CMD manage.py makemigrations

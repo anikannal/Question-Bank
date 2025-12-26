@@ -40,7 +40,7 @@ fi
 
 # 3. Check MongoDB Connectivity
 echo "Step 3: Checking MongoDB connectivity..."
-if $PYTHON_CMD -c "from pymongo import MongoClient; client = MongoClient('mongodb://localhost:27017/', serverSelectionTimeoutMS=2000); client.server_info()" 2>/dev/null; then
+if $PYTHON_CMD -c "from pymongo import MongoClient; import os; host=os.getenv('MONGODB_HOST', 'localhost'); port=int(os.getenv('MONGODB_PORT', 27017)); client = MongoClient(host=host, port=port, serverSelectionTimeoutMS=2000); client.server_info()" 2>/dev/null; then
     echo "✅ MongoDB is reachable."
 else
     echo "⚠️  WARNING: MongoDB is not reachable. Ensure it is running on localhost:27017."
