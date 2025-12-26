@@ -1,9 +1,10 @@
 from django.contrib import admin
 from django.urls import path, include, re_path
-from django.views.generic import TemplateView
+from .spa_views import SPAView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('core.urls')),
-    re_path(r'^.*$', TemplateView.as_view(template_name='index.html')),
+    # Use SPAView for everything else (static files and frontend routing)
+    re_path(r'^.*$', SPAView.as_view()),
 ]
