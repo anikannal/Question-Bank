@@ -9,12 +9,6 @@ cd frontend
 npm install
 
 echo "Building Frontend..."
-# Check if ng is executable, otherwise use npx
-if command -v ng &> /dev/null; then
-    ng build
-else
-    # Fallback to npx
-    npx -p @angular/cli ng build
-fi
+npm run build
 
 echo "Detailed setup complete."

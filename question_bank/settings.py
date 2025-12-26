@@ -45,7 +45,10 @@ ROOT_URLCONF = 'question_bank.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'frontend/dist/frontend/browser'],
+        'DIRS': [
+            BASE_DIR / 'frontend/dist/frontend/browser',
+            BASE_DIR / 'frontend/dist/frontend',
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -112,6 +115,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'frontend/dist/frontend/browser',
+    BASE_DIR / 'frontend/dist/frontend',
 ]
 
 # Default primary key field type
