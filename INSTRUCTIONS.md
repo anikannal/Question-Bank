@@ -1,6 +1,6 @@
 # Team Task Manager - Full Stack Evaluation
 
-Welcome to the Team Task Manager project! This is a simple task management application built with **Django** (Backend) and **Angular** (Frontend), using **MongoDB** as the database.
+Welcome to the Team Task Manager project! This is a simple task management application built with **Django** (Backend) and **Angular** (Frontend), using **PyMongo** to connect to **MongoDB**.
 
 Your goal is to complete 3 specific tasks to improve the application.
 
@@ -24,7 +24,7 @@ The project has been configured for easy setup.
 ### Task 1: Add "Priority" Field
 **Context**: We need to know which tasks are urgent.
 **Requirement**:
-1.  Update the Backend (`core/models.py`, `core/serializers.py`) to include a `priority` field for tasks. It should store values like "Low", "Medium", "High".
+1.  Update the Backend (`core/views.py`) to include a `priority` field for tasks. Note: Since we are using PyMongo directly, you don't need to update models.py, but ensure the field is saved to MongoDB.
 2.  Update the Frontend to display the priority of each task in the list.
 3.  (Optional but recommended) Allow setting the priority when creating a task.
 
@@ -37,7 +37,7 @@ The project has been configured for easy setup.
 ### Task 3: Filter by Assignee
 **Context**: The "All Tasks" view is too cluttered. We need to filter tasks by the user they are assigned to.
 **Requirement**:
-1.  Update the `TaskViewSet` in `core/views.py`.
+1.  Update the `TaskList` view in `core/views.py`.
 2.  It should accept an optional query parameter `owner_id`.
 3.  If provided, return only tasks belonging to that user.
 

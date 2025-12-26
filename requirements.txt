@@ -1,6 +1,5 @@
 Django
 djangorestframework
-djongo
 django-cors-headers
 pymongo
 pytest

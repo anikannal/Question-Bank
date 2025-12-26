@@ -1,47 +1,83 @@
-from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from rest_framework.decorators import action
-from .models import User, Task
-from .serializers import UserSerializer, TaskSerializer
+from rest_framework.views import APIView
+from .utils import users_collection, tasks_collection
+from bson import ObjectId
 
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+def serialize_doc(doc):
+    doc['id'] = str(doc.pop('_id'))
+    return doc
 
-    @action(detail=True, methods=['post'])
-    def tasks(self, request, pk=None):
-        user = self.get_object()
-        serializer = TaskSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(owner=user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class UserList(APIView):
+    def get(self, request):
+        users = list(users_collection.find())
+        return Response([serialize_doc(u) for u in users])
 
-class TaskViewSet(viewsets.ModelViewSet):
-    queryset = Task.objects.all()
-    serializer_class = TaskSerializer
-
-    def create(self, request, *args, **kwargs):
-        # We override create to ensure tasks are created via the user endpoint or handle it here if owner_id is passed
-        # However, the previous API laid out creating task for user.
-        # Let's support creating task directly if owner_id is in body, otherwise rely on nested.
-        # actually, standard DRF way is fine if owner is required.
-        # But 'owner' field is read_only in serializer, so it must be passed via save().
+    def post(self, request):
+        data = request.data
+        if users_collection.find_one({"email": data.get("email")}):
+             return Response({"detail": "Email already exists"}, status=status.HTTP_400_BAD_REQUEST)
         
-        owner_id = request.data.get('owner_id')
+        # Simple validation
+        user = {
+            "email": data.get("email"),
+            "is_active": data.get("is_active", True)
+        }
+        result = users_collection.insert_one(user)
+        user['_id'] = result.inserted_id
+        return Response(serialize_doc(user), status=status.HTTP_201_CREATED)
+
+class TaskList(APIView):
+    def get(self, request):
+        # Handle query params for Task 3 here if needed, or let candidate do it
+        owner_id = request.query_params.get('owner_id')
+        filter_query = {}
         if owner_id:
-             user = get_object_or_404(User, pk=owner_id)
-             serializer = self.get_serializer(data=request.data)
-             serializer.is_valid(raise_exception=True)
-             self.perform_create(serializer, owner=user)
-             headers = self.get_success_headers(serializer.data)
-             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-        
-        return super().create(request, *args, **kwargs)
+            filter_query['owner_id'] = owner_id
+            
+        tasks = list(tasks_collection.find(filter_query))
+        serialized_tasks = []
+        for t in tasks:
+            # Join owner info manually if needed, or just return ID
+            serialized_tasks.append(serialize_doc(t))
+        return Response(serialized_tasks)
 
-    def perform_create(self, serializer, owner=None):
-        if owner:
-            serializer.save(owner=owner)
-        else:
-            serializer.save()
+    def post(self, request):
+        data = request.data
+        task = {
+            "title": data.get("title"),
+            "description": data.get("description", ""),
+            "is_completed": data.get("is_completed", False),
+            "owner_id": data.get("owner_id"), # Storing as string or whatever passed
+            # Task 1: Priority field placeholder
+        }
+        if data.get("priority"):
+             task["priority"] = data.get("priority")
+
+        result = tasks_collection.insert_one(task)
+        task['_id'] = result.inserted_id
+        return Response(serialize_doc(task), status=status.HTTP_201_CREATED)
+
+class TaskDetail(APIView):
+    def put(self, request, pk):
+        data = request.data
+        update_data = {
+            "title": data.get("title"),
+            "is_completed": data.get("is_completed"),
+        }
+        if "priority" in data:
+             update_data["priority"] = data["priority"]
+             
+        # Remove None values
+        update_data = {k: v for k, v in update_data.items() if v is not None}
+        
+        result = tasks_collection.update_one(
+            {"_id": ObjectId(pk)},
+            {"$set": update_data}
+        )
+        
+        if result.matched_count == 0:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+            
+        updated_task = tasks_collection.find_one({"_id": ObjectId(pk)})
+        return Response(serialize_doc(updated_task))
