@@ -2,6 +2,14 @@ import pytest
 from rest_framework.test import APIClient
 from core.utils import users_collection, tasks_collection
 from bson import ObjectId
+import sys
+
+# Ensure settings are loaded for DRF components
+if __name__ == "__main__":
+    print("\n[ERROR] Do not run this file directly with 'python'.")
+    print("Please run tests using 'pytest' from the project root directory:")
+    print("    pytest tests/evaluation_tests.py\n")
+    sys.exit(1)
 
 @pytest.fixture
 def api_client():

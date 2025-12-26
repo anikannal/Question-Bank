@@ -44,7 +44,7 @@ The project has been configured for easy setup.
 ## Verification
 
 We have provided a test suite to verify your work.
-To run the tests:
+To run the tests, execute the following command **from the project root directory**:
 ```bash
 pytest tests/evaluation_tests.py
 ```
